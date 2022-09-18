@@ -1,3 +1,4 @@
+/*
 import React, {ChangeEvent} from 'react';
 
 type UniversalCheckBoxPropsType = {
@@ -15,3 +16,5 @@ export const UniversalCheckBox = (props:UniversalCheckBoxPropsType) => {
         </div>
     );
 };
+*/
+export {}

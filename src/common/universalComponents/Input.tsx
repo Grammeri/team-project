@@ -1,3 +1,4 @@
+/*
 import React, {ChangeEvent, KeyboardEvent, useState} from "react";
 
 type AddItemFormPropsType = {
@@ -34,8 +35,10 @@ export const Input = (props: AddItemFormPropsType) => {
                    onKeyPress={onKeyPressHandler}
                    className={error ? "error" : ""}
             />
-          {/*  <button onClick={addTask}>+</button>*/}
+          {/!*  <button onClick={addTask}>+</button>*!/}
             {error && <div className="error-message">{error}</div>}
         </div>
     )
 }
+*/
+export {}
