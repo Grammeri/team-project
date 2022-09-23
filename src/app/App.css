@@ -44,7 +44,9 @@
 }
 
 .content {
+  display: flex;
   grid-area: content;
+  justify-content: center;
 }
 
 @media (max-width: 500px) {

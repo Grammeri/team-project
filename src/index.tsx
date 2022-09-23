@@ -6,7 +6,6 @@ import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 
 import App from './app/App'
-import { Profile } from './features/Profile'
 import reportWebVitals from './reportWebVitals'
 import { store } from './store/Store'
 

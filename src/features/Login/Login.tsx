@@ -8,7 +8,7 @@ import FormGroup from '@material-ui/core/FormGroup'
 import Grid from '@material-ui/core/Grid'
 import TextField from '@material-ui/core/TextField'
 import { useFormik } from 'formik'
-import { Navigate } from 'react-router-dom'
+import { Navigate, NavLink } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks/Hooks'
 
@@ -80,7 +80,7 @@ export const Login = () => {
                 )}
 
                 <FormControlLabel
-                  style={{ color: 'black' }}
+                  style={{ color: 'black', margin: '10px' }}
                   label={'Remember me'}
                   control={
                     <Checkbox
@@ -90,13 +90,22 @@ export const Login = () => {
                   }
                 />
 
-                <h3 className={styles.forget}>Forgot Password?</h3>
+                <Button variant={'contained'} color={'primary'} style={{ margin: '5px' }}>
+                  <NavLink to="/forgotPassword">FORGOT PASSWORD</NavLink>
+                </Button>
 
-                <Button type={'submit'} variant={'contained'} color={'primary'}>
+                <Button
+                  style={{ margin: '5px' }}
+                  type={'submit'}
+                  variant={'contained'}
+                  color={'primary'}
+                >
                   Login
                 </Button>
-                <h3 className={styles.haveAcc}>Already have an account?</h3>
-                <h3 className={styles.sign}>Sign Up</h3>
+                <h3 className={styles.haveAcc}>Don&apos;t have an account?</h3>
+                <h3 className={styles.sign}>
+                  <NavLink to="/signUp">Sign Up</NavLink>
+                </h3>
                 <h5 className={styles.advertisment}>I am created by Formik</h5>
               </FormGroup>
             </form>

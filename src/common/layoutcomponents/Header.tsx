@@ -1,8 +1,9 @@
 import * as React from 'react'
+import { useEffect } from 'react'
 import '../../app/App.css'
 
 import { AppBar, Box, Button, IconButton, Toolbar, Typography } from '@material-ui/core'
-import { Navigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { logoutTC } from '../../features/Login/auth-reducer'
 import { useAppDispatch, useAppSelector } from '../../store/hooks/Hooks'
@@ -11,13 +12,17 @@ export const Header = () => {
   const dispatch = useAppDispatch()
   const isLoggedIn = useAppSelector(state => state.auth.isLoggedIn)
 
+  const navigate = useNavigate()
+
   const logoutHandler = () => {
     dispatch(logoutTC())
   }
 
-  if (!isLoggedIn) {
-    return <Navigate to="/login" />
-  }
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login')
+    }
+  }, [isLoggedIn]) // ссылка на переменную
 
   return (
     <Box sx={{ flexGrow: 1 }}>

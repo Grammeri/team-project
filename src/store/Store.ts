@@ -6,7 +6,7 @@ import {
 } from 'redux'
 import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk'
 
-import { appReducer, SetAppIsInitializedType } from '../app/app-reducer'
+import { appReducer } from '../app/app-reducer'
 import { ActionsType, authReducer } from '../features/Login/auth-reducer'
 
 let RootReducer = combineReducers({
