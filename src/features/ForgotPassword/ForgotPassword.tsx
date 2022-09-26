@@ -2,8 +2,11 @@ import React from 'react'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 
+import { useAppDispatch, useAppSelector } from '../../store/hooks/Hooks'
+import { forgotPassTC } from '../Login/auth-reducer'
 import styles from '../SignUp/SignUp.module.css'
 
 interface IFormInputs {
@@ -22,9 +25,9 @@ const SignupSchema = yup
   .required()
 
 export function ForgotPassword() {
-  /*  const dispatch = useAppDispatch()
-  const isRegistered = useAppSelector(state => state.auth.isRegistered)
-  const navigate = useNavigate()*/
+  const dispatch = useAppDispatch()
+  /* const isRegistered = useAppSelector(state => state.auth.isRegistered)*/
+  const navigate = useNavigate()
 
   const {
     register,
@@ -35,8 +38,9 @@ export function ForgotPassword() {
   })
 
   const onSubmit = (data: IFormInputs) => {
-    alert(JSON.stringify(data))
-    /*dispatch(forgotPassTC(data))*/
+    /* alert(JSON.stringify(data))*/
+    dispatch(forgotPassTC(data.email)) // могу ли передавать всю data?
+    navigate('/checkEmail')
   }
 
   return (
@@ -46,7 +50,9 @@ export function ForgotPassword() {
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>
-        <h1 style={{ marginBottom: '30px', marginTop: '30px' }}>Forgot your password?</h1>
+        <h1 style={{ marginBottom: '30px', marginTop: '30px', color: 'steelblue' }}>
+          Forgot your password?
+        </h1>
         <div>
           <label className={styles.email}>Email</label>
         </div>

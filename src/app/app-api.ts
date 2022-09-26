@@ -1,31 +1,33 @@
 import axios, { AxiosResponse, ResponseType } from 'axios'
 
-let instance = axios.create({
-  baseURL: process.env.REACT_APP_BACK_URL || 'http://localhost:7542/2.0/',
-  withCredentials: true,
-})
+import { instanceHeroku, instanceLocal } from '../api/instance-api'
 
 export const authAPI = {
   login(payload: LoginParamsType) {
-    return instance.post<LoginParamsType, AxiosResponse<LoginType>>('/auth/login', payload)
+    return instanceLocal.post<LoginParamsType, AxiosResponse<LoginType>>('/auth/login', payload)
   },
   authMe() {
-    return instance.post<ResponseType>('auth/me')
+    return instanceLocal.post<ResponseType>('auth/me')
   },
   logout() {
-    return instance.delete<ResponseType>('auth/me')
+    return instanceLocal.delete<ResponseType>('auth/me')
   },
   register(payload: RegisterType) {
-    return instance.post<RegisterType>('auth/register', payload)
+    return instanceLocal.post<RegisterType>('auth/register', payload)
   },
   update(payload: UpdateType) {
-    return instance.post<UpdateType>('auth/me', payload)
+    return instanceLocal.post<UpdateType>('auth/me', payload)
   },
   forget(payload: ForgetType) {
-    return instance.post<ForgetType>('auth/forgot', payload)
+    return instanceHeroku.post<ForgetType>('auth/forgot', payload, { withCredentials: true })
   },
-  newPass(payload: NewPassType) {
-    return instance.post<NewPassType>('auth/set-new-password', payload)
+  newPass(password: string, resetPasswordToken: string) {
+    console.log('api')
+
+    return instanceLocal.post<NewPassType>('auth/set-new-password', {
+      password,
+      resetPasswordToken,
+    })
   },
 }
 

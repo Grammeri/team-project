@@ -44,7 +44,6 @@ export function SignUp() {
   }
 
   useEffect(() => {
-    debugger
     if (isRegistered) {
       navigate('/login')
     }
@@ -54,7 +53,7 @@ export function SignUp() {
     <form className={styles.rectangle} onSubmit={handleSubmit(onSubmit)}>
       <div>
         <div>
-          <h1 style={{ marginBottom: '30px' }}>Sign Up</h1>
+          <h1 style={{ marginBottom: '30px', color: 'steelblue' }}>Sign Up</h1>
           <label className={styles.email}>Email</label>
         </div>
         <div style={{ marginBottom: '20px', color: 'red' }}>

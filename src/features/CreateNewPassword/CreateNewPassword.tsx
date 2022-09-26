@@ -2,29 +2,31 @@ import React from 'react'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
+import { Navigate, NavLink, useNavigate, useParams } from 'react-router-dom'
 import * as yup from 'yup'
 
+import { NewPassType } from '../../app/app-api'
+import { useAppDispatch } from '../../store/hooks/Hooks'
+import { createNewPasswordTC } from '../Login/auth-reducer'
 import styles from '../SignUp/SignUp.module.css'
 
 interface IFormInputs {
-  email: string
   password: string
-  confirmPassword: string
+  resetPasswordToken: string | undefined /*| undefined*/
 }
 
 const SignupSchema = yup
   .object()
   .shape({
-    email: yup.string().email().required(),
-    /*password: yup.string().min(6).max(15).required(),
-        confirmPassword: yup.string().oneOf([yup.ref('password'), null]),*/
+    password: yup.string().min(6).max(15).required(),
   })
   .required()
 
 export function CreateNewPassword() {
-  /*  const dispatch = useAppDispatch()
-    const isRegistered = useAppSelector(state => state.auth.isRegistered)
-    const navigate = useNavigate()*/
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
+  const { token } = useParams()
 
   const {
     register,
@@ -34,32 +36,27 @@ export function CreateNewPassword() {
     resolver: yupResolver(SignupSchema),
   })
 
-  const onSubmit = (data: IFormInputs) => {
-    alert(JSON.stringify(data))
-    /*dispatch(registerTC(data))*/
+  const onSubmit = ({ password }: { password: string }) => {
+    /*alert(JSON.stringify(data))*/
+    console.log('submit')
+    if (token) {
+      dispatch(createNewPasswordTC(password, token))
+    }
   }
-
-  /*  useEffect(() => {
-      if (isRegistered) {
-        navigate('/login')
-      }
-    }, [isRegistered])*/
 
   return (
     <form
-      style={{ alignItems: 'start' }}
+      style={{ flexDirection: 'column', padding: '15px', justifyContent: 'start' }}
       className={styles.rectangle}
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div>
-        <h1 style={{ marginBottom: '30px', marginTop: '30px' }}>Create new password</h1>
-        <div>
-          <label className={styles.email}>Email</label>
-        </div>
-        <div style={{ marginBottom: '20px', color: 'red' }}>
-          <input placeholder={'email'} {...register('email')} />
-          {errors.email && 'Email is a required field'}
-        </div>
+      <h1 style={{ marginBottom: '30px', marginTop: '30px', color: 'steelblue' }}>
+        Create new password
+      </h1>
+      <label style={{ marginBottom: '10px' }}>Password</label>
+      <input type={'password'} placeholder={'password'} {...register('password')} />
+      {errors.password && <p>{errors.password.message}</p>}
+      <div style={{ width: '100%', marginTop: '15px' }}>
         <input type="submit" />
       </div>
     </form>

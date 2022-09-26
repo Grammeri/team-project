@@ -80,7 +80,7 @@ export const Login = () => {
                 )}
 
                 <FormControlLabel
-                  style={{ color: 'black', margin: '10px' }}
+                  style={{ color: 'steelblue', margin: '10px' }}
                   label={'Remember me'}
                   control={
                     <Checkbox
@@ -91,7 +91,9 @@ export const Login = () => {
                 />
 
                 <Button variant={'contained'} color={'primary'} style={{ margin: '5px' }}>
-                  <NavLink to="/forgotPassword">FORGOT PASSWORD</NavLink>
+                  <NavLink to="/forgotPassword" style={{ color: 'white' }}>
+                    FORGOT PASSWORD
+                  </NavLink>
                 </Button>
 
                 <Button
@@ -102,10 +104,12 @@ export const Login = () => {
                 >
                   Login
                 </Button>
-                <h3 className={styles.haveAcc}>Don&apos;t have an account?</h3>
-                <h3 className={styles.sign}>
-                  <NavLink to="/signUp">Sign Up</NavLink>
-                </h3>
+                <div className={styles.haveAcc}>Don&apos;t have an account?</div>
+                <div className={styles.sign}>
+                  <NavLink to="/signUp" style={{ color: 'steelblue' }}>
+                    Sign Up
+                  </NavLink>
+                </div>
                 <h5 className={styles.advertisment}>I am created by Formik</h5>
               </FormGroup>
             </form>

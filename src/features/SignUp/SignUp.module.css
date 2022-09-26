@@ -31,8 +31,16 @@ input {
 .advertisment {
     margin-top: 70px;
 
-    color: black;
+    color: steelblue;
     text-align: center;
 
     opacity: 0.5;
+}
+
+label{
+    color:steelblue;
+}
+
+.hz{
+   color:steelblue;
 }

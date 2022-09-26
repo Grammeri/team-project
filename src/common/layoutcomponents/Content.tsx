@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 
 import ErrorImg from '../../assets/images/Error404.jpg'
 import { CreateNewPassword } from '../../features/CreateNewPassword/CreateNewPassword'
+import { CheckEmail } from '../../features/ForgotPassword/CheckEmail'
 import { ForgotPassword } from '../../features/ForgotPassword/ForgotPassword'
 import { Login } from '../../features/Login/Login'
 import { Profile } from '../../features/Profile/Profile'
@@ -23,9 +24,11 @@ export const Content = (props: ContentPropsType) => {
             path="404"
             element={<img style={{ display: 'flex', justifyContent: 'center' }} src={ErrorImg} />}
           />
-          <Route path="*" element={<Navigate to={'404'} />} />
+          <Route path="/" element={<Navigate to={'profile'} />} />
           <Route path="forgotPassword" element={<ForgotPassword />} />
-          <Route path="createNewPassword" element={<CreateNewPassword />} />
+          <Route path="createNewPassword/:token" element={<CreateNewPassword />} />
+          <Route path="checkEmail" element={<CheckEmail />} />
+          <Route path="*" element={<Navigate to={'404'} />} />
         </Routes>
       </div>
     </>
