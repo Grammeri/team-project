@@ -6,6 +6,7 @@ import { CircularProgress } from '@material-ui/core'
 import { Content } from '../common/layoutcomponents/Content'
 import { Header } from '../common/layoutcomponents/Header'
 import { Navigation } from '../common/layoutcomponents/Navigation'
+import ErrorProcessing from '../common/universalComponents/ErrorProcessing/ErrorProcessing'
 import { useAppDispatch, useAppSelector } from '../store/hooks/Hooks'
 
 import { initializeAppTC } from './app-reducer'
@@ -17,6 +18,7 @@ const App = () => {
   useEffect(() => {
     dispatch(initializeAppTC())
   }, [])
+
   if (!isInitialized) {
     return (
       <div style={{ position: 'fixed', top: '30%', textAlign: 'center', width: '100%' }}>
@@ -36,6 +38,7 @@ const App = () => {
       <div className={'nav'}>
         <Navigation />
       </div>
+      <ErrorProcessing />
     </div>
   )
 }

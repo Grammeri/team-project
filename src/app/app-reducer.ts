@@ -1,16 +1,19 @@
 /*import {setIsLoggedInAC} from "../features/Login/auth-reducer.ts";
 import {authAPI} from "../api/todolists-api";*/
+import axios, { AxiosError } from 'axios'
 import { Dispatch } from 'redux'
 
 import { setIsLoggedInAC, setIsLoggedInActionType } from '../features/Login/auth-reducer'
 import { AppThunk } from '../store/Store'
+import { handleServerNetworkError } from '../utils/errorUtils'
 
 import { authAPI } from './app-api'
-/*import {handleServerAppError, handleServerNetworkError} from "../utils/error-utils";*/
+
+export type NullableType<T> = null | T
 
 const initialState: InitialStateType = {
-  status: 'idle',
-  error: null,
+  status: 'idle' as RequestStatusType,
+  error: null as NullableType<string>, //"Error occured!!! as NullableType<string>
   isInitialized: false,
 }
 
@@ -30,8 +33,8 @@ export const appReducer = (
   switch (action.type) {
     case 'APP/SET-STATUS':
       return { ...state, status: action.status }
-    /*        case 'APP/SET-ERROR':
-            return {...state, error: action.error}*/
+    case 'APP/SET-ERROR':
+      return { ...state, error: action.error }
     case 'APP/SET-IS-INITIALIZED':
       return { ...state, isInitialized: action.isInitialized }
     default:
@@ -39,33 +42,63 @@ export const appReducer = (
   }
 }
 
-/*export const setAppErrorAC = (error: string | null) => ({type: 'APP/SET-ERROR', error} as const)*/
+export const setAppErrorAC = (error: NullableType<string>) =>
+  ({ type: 'APP/SET-ERROR', error } as const)
 export const setAppStatusAC = (status: RequestStatusType) =>
   ({ type: 'APP/SET-STATUS', status } as const)
 export const setAppisInitialezedAC = (isInitialized: boolean) =>
   ({ type: 'APP/SET-IS-INITIALIZED', isInitialized } as const)
-/*export type SetAppErrorActionType = ReturnType<typeof setAppErrorAC>*/
-export type SetAppStatusActionType = ReturnType<typeof setAppStatusAC>
-export type SetAppIsInitializedType = ReturnType<typeof setAppisInitialezedAC>
 
-export const initializeAppTC = (): AppThunk => (dispatch: Dispatch<ActionsType>) => {
+/*export const initializeAppTC = (): AppThunk => (dispatch: Dispatch<ActionsType>) => {
   authAPI
     .authMe()
     .then(res => {
-      /*dispatch(setAppStatusAC('loading'))
-        if (res.data.resultCode === 0) {*/
+      dispatch(setAppStatusAC('loading'))
       dispatch(setIsLoggedInAC(true))
-      /* dispatch(setAppStatusAC('succeeded'))
-        } else {
-            handleServerAppError(res.data, dispatch);
-        }*/
     })
-    /* .catch((error) => {
-            handleServerNetworkError(error, dispatch)
-        })*/
+    .catch((err: AxiosError) => {
+      dispatch(setAppErrorAC(err.message))
+      handleServerNetworkError(dispatch, err.message)
+    })
     .finally(() => {
       dispatch(setAppisInitialezedAC(true))
+      dispatch(setAppStatusAC('idle'))
     })
+}*/
+//not functional
+export const initializeAppTC = (): AppThunk => async dispatch => {
+  dispatch(setAppStatusAC('loading'))
+  try {
+    let res = await authAPI.authMe()
+
+    dispatch(setIsLoggedInAC(true))
+    dispatch(setAppisInitialezedAC(true))
+  } catch (e) {
+    dispatch(setAppStatusAC('idle'))
+    const err = e as Error | AxiosError
+
+    if (axios.isAxiosError(err)) {
+      const error = err.response?.data
+        ? (err.response.data as { error: string }).error
+        : err.message
+
+      dispatch(setAppErrorAC(error))
+    } else {
+      dispatch(setAppErrorAC(`Native error ${err.message}`))
+    }
+  } finally {
+    dispatch(setAppisInitialezedAC(true))
+    dispatch(setAppStatusAC('idle'))
+  }
 }
 
-export type ActionsType = SetAppStatusActionType | setIsLoggedInActionType | SetAppIsInitializedType
+//types
+export type SetAppErrorActionType = ReturnType<typeof setAppErrorAC>
+export type SetAppStatusActionType = ReturnType<typeof setAppStatusAC>
+export type SetAppIsInitializedType = ReturnType<typeof setAppisInitialezedAC>
+
+export type ActionsType =
+  | SetAppStatusActionType
+  | setIsLoggedInActionType
+  | SetAppIsInitializedType
+  | SetAppErrorActionType

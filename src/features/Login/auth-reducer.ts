@@ -1,10 +1,15 @@
-import { log } from 'util'
-
+import { AxiosError } from 'axios'
 import { Dispatch } from 'redux'
 
-import { authAPI, LoginParamsType, NewPassType, RegisterType } from '../../app/app-api'
-import { setAppisInitialezedAC, SetAppIsInitializedType } from '../../app/app-reducer'
+import { authAPI, LoginParamsType, RegisterType } from '../../app/app-api'
+import {
+  SetAppErrorActionType,
+  SetAppIsInitializedType,
+  setAppStatusAC,
+  SetAppStatusActionType,
+} from '../../app/app-reducer'
 import { AppThunk } from '../../store/Store'
+import { handleServerNetworkError } from '../../utils/errorUtils'
 
 const initialState = {
   isLoggedIn: false,
@@ -17,7 +22,7 @@ type InitialStateType = typeof initialState
 
 export const authReducer = (
   state: InitialStateType = initialState,
-  action: ActionsType
+  action: AuthActionsType
 ): InitialStateType => {
   switch (action.type) {
     case 'login/SET-IS-LOGGED-IN':
@@ -42,42 +47,62 @@ export const CreateNewPasswordAC = (info: string) =>
 // thunks
 export const loginTC =
   (data: LoginParamsType): AppThunk =>
-  (dispatch: Dispatch<ActionsType>) => {
-    /*   dispatch(setAppStatusAC('loading'))*/
-    authAPI.login(data).then(res => {
-      /*  dispatch(setAppStatusAC('succeeded'))*/
-      dispatch(setIsLoggedInAC(true))
-    })
+  (dispatch: Dispatch<AuthActionsType>) => {
+    dispatch(setAppStatusAC('loading'))
+    authAPI
+      .login(data)
+      .then(res => {
+        dispatch(setIsLoggedInAC(true))
+      })
+      .catch((err: AxiosError) => {
+        /*dispatch(setAppErrorAC(err.message))*/
+        handleServerNetworkError(dispatch, err.message)
+      })
+      .finally(() => {
+        dispatch(setAppStatusAC('idle'))
+      })
   }
 
-export const logoutTC = (): AppThunk => (dispatch: Dispatch<ActionsType>) => {
-  /*   dispatch(setAppStatusAC('loading'))*/
-  console.log('beforeAPI')
-  authAPI.logout().then(res => {
-    /*  dispatch(setAppStatusAC('succeeded'))*/
-    /*dispatch(setAppisInitialezedAC(false))*/
-    dispatch(setIsLoggedInAC(false))
-  })
+export const logoutTC = (): AppThunk => (dispatch: Dispatch<AuthActionsType>) => {
+  dispatch(setAppStatusAC('loading'))
+  authAPI
+    .logout()
+    .then(res => {
+      /*dispatch(setAppisInitialezedAC(false))*/
+      dispatch(setIsLoggedInAC(false))
+    })
+    .catch((err: AxiosError) => {
+      /*dispatch(setAppErrorAC(err.message))*/
+      handleServerNetworkError(dispatch, err.message)
+    })
+    .finally(() => {
+      dispatch(setAppStatusAC('idle'))
+    })
 }
 export const registerTC =
   (payload: RegisterType): AppThunk =>
-  (dispatch: Dispatch<ActionsType>) => {
-    /*   dispatch(setAppStatusAC('loading'))*/
+  (dispatch: Dispatch<AuthActionsType>) => {
+    dispatch(setAppStatusAC('loading'))
     authAPI
       .register(payload)
       .then(res => {
         /*  dispatch(setAppStatusAC('succeeded'))*/
         dispatch(setAppisRegisteredAC(true))
       })
+      .catch((err: AxiosError) => {
+        /* dispatch(setAppErrorAC(err.message))*/
+        handleServerNetworkError(dispatch, err.message)
+      })
       .finally(() => {
         dispatch(setAppisRegisteredAC(true))
+        dispatch(setAppStatusAC('idle'))
       })
   }
 
 export const forgotPassTC =
   (email: string): AppThunk =>
-  (dispatch: Dispatch<ActionsType>) => {
-    /*   dispatch(setAppStatusAC('loading'))*/
+  (dispatch: Dispatch<AuthActionsType>) => {
+    dispatch(setAppStatusAC('loading'))
     // dispatch(setAppisInitialezedAC(true))
     dispatch(setIsLoggedInAC(true))
     authAPI
@@ -95,13 +120,20 @@ link</a>
         /* dispatch(setIsLoggedInAC(true))*/
         console.log(res.config.data.info) //откуда config? зачем это писать
       })
-      .catch(err => console.log(err))
+      .catch((err: AxiosError) => {
+        /*dispatch(setAppErrorAC(err.message))*/
+        handleServerNetworkError(dispatch, err.message)
+      })
+      .finally(() => {
+        dispatch(setAppisRegisteredAC(true))
+        dispatch(setAppStatusAC('idle'))
+      })
   }
 
 export const createNewPasswordTC =
   (password: string, resetPasswordToken: string): AppThunk =>
-  (dispatch: Dispatch<ActionsType>) => {
-    /*   dispatch(setAppStatusAC('loading'))*/
+  (dispatch: Dispatch<AuthActionsType>) => {
+    dispatch(setAppStatusAC('loading'))
     /*dispatch(setAppisInitialezedAC(true))*/
     authAPI
       .newPass(password, resetPasswordToken)
@@ -110,8 +142,13 @@ export const createNewPasswordTC =
         dispatch(CreateNewPasswordAC(res.data.password))
         /*dispatch(setIsLoggedInAC(true))*/
       })
+      .catch((err: AxiosError) => {
+        /*dispatch(setAppErrorAC(err.message))*/
+        handleServerNetworkError(dispatch, err.message)
+      })
       .finally(() => {
-        /* dispatch(setAppisInitialezedAC(true))*/
+        dispatch(setAppisRegisteredAC(true))
+        dispatch(setAppStatusAC('idle'))
       })
   }
 
@@ -120,8 +157,10 @@ export type setIsLoggedInActionType = ReturnType<typeof setIsLoggedInAC>
 export type setAppisRegisteredActionType = ReturnType<typeof setAppisRegisteredAC>
 export type CreateNewPasswordActionType = ReturnType<typeof CreateNewPasswordAC>
 
-export type ActionsType =
+export type AuthActionsType =
   | setIsLoggedInActionType
   | SetAppIsInitializedType
   | setAppisRegisteredActionType
   | CreateNewPasswordActionType
+  | SetAppStatusActionType
+  | SetAppErrorActionType

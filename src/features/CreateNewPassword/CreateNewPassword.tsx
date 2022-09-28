@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
@@ -37,12 +37,12 @@ export function CreateNewPassword() {
   })
 
   const onSubmit = ({ password }: { password: string }) => {
-    /*alert(JSON.stringify(data))*/
-    console.log('submit')
     if (token) {
       dispatch(createNewPasswordTC(password, token))
     }
   }
+
+  navigate('/login')
 
   return (
     <form
