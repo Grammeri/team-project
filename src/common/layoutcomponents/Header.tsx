@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography'
 import { RequestStatusType } from '../../app/app-reducer'
 import { logoutTC } from '../../features/Login/auth-reducer'
 import { useAppDispatch, useAppSelector } from '../../store/hooks/Hooks'
-
+import { UserPhoto } from '../universalComponents/UserPhoto/UserPhoto'
 import '../../app/App.css'
 
 export const Header = () => {
@@ -38,6 +38,7 @@ export const Header = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             IT INCUBATOR
           </Typography>
+          <UserPhoto variant="small" />
           {isLoggedIn && (
             <Button color="inherit" onClick={logoutHandler}>
               Logout

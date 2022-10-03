@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
-import { Navigate, NavLink, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import * as yup from 'yup'
 
-import { NewPassType } from '../../app/app-api'
 import { useAppDispatch } from '../../store/hooks/Hooks'
 import { createNewPasswordTC } from '../Login/auth-reducer'
 import styles from '../SignUp/SignUp.module.css'

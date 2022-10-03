@@ -1,8 +1,9 @@
 import { AxiosError } from 'axios'
 import { Dispatch } from 'redux'
 
-import { authAPI, LoginParamsType, RegisterType } from '../../app/app-api'
+import { authAPI, LoginParamsType, LoginType, RegisterType } from '../../app/app-api'
 import {
+  setAppErrorAC,
   SetAppErrorActionType,
   SetAppIsInitializedType,
   setAppStatusAC,
@@ -11,11 +12,25 @@ import {
 import { AppThunk } from '../../store/Store'
 import { handleServerNetworkError } from '../../utils/errorUtils'
 
-const initialState = {
+const initialState: AuthStateType = {
   isLoggedIn: false,
   isRegistered: false,
   password: '',
   info: '',
+  userData: {
+    _id: '',
+    email: '',
+    name: '',
+    avatar: '',
+    publicCardPacksCount: 0,
+    // количество колод
+
+    created: '',
+    updated: '',
+    isAdmin: false,
+    verified: false, // подтвердил ли почту
+    rememberMe: false,
+  },
 }
 
 type InitialStateType = typeof initialState
@@ -31,6 +46,10 @@ export const authReducer = (
       return { ...state, isRegistered: action.value }
     case 'APP/CREATE-NEW-PASSWORD':
       return { ...state, info: action.info }
+    case 'USER-DATA':
+      return { ...state, userData: action.data }
+    case 'PROFILE-NAME-CHANGE':
+      return { ...state, userData: { ...state.userData, name: action.name } }
     default:
       return state
   }
@@ -43,6 +62,9 @@ export const setAppisRegisteredAC = (value: boolean) =>
   ({ type: 'APP/SET-IS-REGISTERED', value } as const)
 export const CreateNewPasswordAC = (info: string) =>
   ({ type: 'APP/CREATE-NEW-PASSWORD', info } as const)
+export const UserDataAC = (data: LoginType) => ({ type: 'USER-DATA', data } as const)
+export const profileNameChangeAC = (name: string) =>
+  ({ type: 'PROFILE-NAME-CHANGE', name } as const)
 
 // thunks
 export const loginTC =
@@ -53,6 +75,7 @@ export const loginTC =
       .login(data)
       .then(res => {
         dispatch(setIsLoggedInAC(true))
+        dispatch(UserDataAC(res.data))
       })
       .catch((err: AxiosError) => {
         /*dispatch(setAppErrorAC(err.message))*/
@@ -136,10 +159,10 @@ export const createNewPasswordTC =
     dispatch(setAppStatusAC('loading'))
     /*dispatch(setAppisInitialezedAC(true))*/
     authAPI
-      .newPass(password, resetPasswordToken)
+      .newPass({ password, resetPasswordToken })
       .then(res => {
         /*  dispatconsole.log('thunk')ch(setAppStatusAC('succeeded'))*/
-        dispatch(CreateNewPasswordAC(res.data.password))
+        dispatch(CreateNewPasswordAC('Your pass was successully changed'))
         /*dispatch(setIsLoggedInAC(true))*/
       })
       .catch((err: AxiosError) => {
@@ -152,10 +175,31 @@ export const createNewPasswordTC =
       })
   }
 
+export const profileNameChangeTC = // используем thunk, and AC
+
+    (name: string): AppThunk =>
+    (dispatch: Dispatch<AuthActionsType>) => {
+      authAPI
+        .update({ name })
+        .then(res => {
+          dispatch(setAppStatusAC('loading'))
+          dispatch(profileNameChangeAC(name))
+        })
+        .catch((err: AxiosError) => {
+          dispatch(setAppErrorAC(err.message))
+          handleServerNetworkError(dispatch, err.message)
+        })
+        .finally(() => {
+          dispatch(setAppStatusAC('idle'))
+        })
+    }
+
 // types
 export type setIsLoggedInActionType = ReturnType<typeof setIsLoggedInAC>
 export type setAppisRegisteredActionType = ReturnType<typeof setAppisRegisteredAC>
 export type CreateNewPasswordActionType = ReturnType<typeof CreateNewPasswordAC>
+export type UserDataActionType = ReturnType<typeof UserDataAC>
+export type ProfileNameChangeActionType = ReturnType<typeof profileNameChangeAC>
 
 export type AuthActionsType =
   | setIsLoggedInActionType
@@ -164,3 +208,13 @@ export type AuthActionsType =
   | CreateNewPasswordActionType
   | SetAppStatusActionType
   | SetAppErrorActionType
+  | UserDataActionType
+  | ProfileNameChangeActionType
+
+type AuthStateType = {
+  isLoggedIn: boolean
+  isRegistered: boolean
+  password: string
+  info: null | string
+  userData: LoginType
+}

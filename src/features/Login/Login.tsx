@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid'
 import TextField from '@material-ui/core/TextField'
 import { useFormik } from 'formik'
 import { Navigate, NavLink } from 'react-router-dom'
+import * as yup from 'yup'
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks/Hooks'
 
@@ -25,13 +26,23 @@ export const Login = () => {
   const dispatch = useAppDispatch()
   const isLoggedIn = useAppSelector(state => state.auth.isLoggedIn)
 
+  const validationSchema = yup
+    .object()
+    .shape({
+      email: yup.string().email().required(),
+      password: yup.string().min(6).max(15).required(),
+      confirmPassword: yup.string().oneOf([yup.ref('password'), null]),
+    })
+    .required()
+
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
       rememberMe: false,
     },
-    validate: values => {
+    validationSchema,
+    /*    validate: values => {
       const errors: FormikErrorType = {}
 
       if (!values.email) {
@@ -46,7 +57,8 @@ export const Login = () => {
       }
 
       return errors
-    },
+    },*/
+
     onSubmit: values => {
       dispatch(loginTC(values))
       /* alert(JSON.stringify(values));*/

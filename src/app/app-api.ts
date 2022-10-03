@@ -4,30 +4,27 @@ import { instanceHeroku, instanceLocal } from '../api/instance-api'
 
 export const authAPI = {
   login(payload: LoginParamsType) {
-    return instanceLocal.post<LoginParamsType, AxiosResponse<LoginType>>('/auth/login', payload)
+    return instanceLocal.post<LoginType>('/auth/login', payload)
   },
   authMe() {
-    return instanceLocal.post<ResponseType>('auth/me')
+    return instanceLocal.post<LoginType>('auth/me')
   },
   logout() {
-    return instanceLocal.delete<ResponseType>('auth/me')
+    return instanceLocal.delete<ResponseErrorType>('auth/me')
   },
   register(payload: RegisterType) {
-    return instanceLocal.post<RegisterType>('auth/register', payload)
+    return instanceLocal.post<ResponseErrorType>('auth/register', payload)
   },
   update(payload: UpdateType) {
-    return instanceLocal.post<UpdateType>('auth/me', payload)
+    return instanceLocal.post<ResponseErrorType>('auth/me', payload)
   },
   forget(payload: ForgetType) {
-    return instanceHeroku.post<ForgetType>('auth/forgot', payload, { withCredentials: true })
-  },
-  newPass(password: string, resetPasswordToken: string) {
-    console.log('api')
-
-    return instanceLocal.post<NewPassType>('auth/set-new-password', {
-      password,
-      resetPasswordToken,
+    return instanceHeroku.post<ResponseErrorType>('auth/forgot', payload, {
+      withCredentials: true,
     })
+  },
+  newPass(payload: NewPassType) {
+    return instanceLocal.post<ResponseErrorType>('auth/set-new-password', payload)
   },
 }
 
@@ -44,7 +41,7 @@ export type RegisterType = {
 
 export type UpdateType = {
   name: string
-  avatar: '/'
+  avatar?: string
 }
 
 export type ForgetType = {
@@ -65,11 +62,15 @@ export type LoginType = {
   publicCardPacksCount: number
   // количество колод
 
-  created: Date
-  updated: Date
+  created: string
+  updated: string
   isAdmin: boolean
   verified: boolean // подтвердил ли почту
   rememberMe: boolean
 
+  error?: string
+}
+
+export type ResponseErrorType = {
   error?: string
 }

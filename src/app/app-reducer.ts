@@ -1,11 +1,16 @@
 /*import {setIsLoggedInAC} from "../features/Login/auth-reducer.ts";
 import {authAPI} from "../api/todolists-api";*/
 import axios, { AxiosError } from 'axios'
-import { Dispatch } from 'redux'
 
-import { setIsLoggedInAC, setIsLoggedInActionType } from '../features/Login/auth-reducer'
+import {
+  CreateNewPasswordActionType,
+  setAppisRegisteredActionType,
+  setIsLoggedInAC,
+  setIsLoggedInActionType,
+  UserDataAC,
+  UserDataActionType,
+} from '../features/Login/auth-reducer'
 import { AppThunk } from '../store/Store'
-import { handleServerNetworkError } from '../utils/errorUtils'
 
 import { authAPI } from './app-api'
 
@@ -73,6 +78,7 @@ export const initializeAppTC = (): AppThunk => async dispatch => {
 
     dispatch(setIsLoggedInAC(true))
     dispatch(setAppisInitialezedAC(true))
+    dispatch(UserDataAC(res.data))
   } catch (e) {
     dispatch(setAppStatusAC('idle'))
     const err = e as Error | AxiosError
@@ -98,7 +104,10 @@ export type SetAppStatusActionType = ReturnType<typeof setAppStatusAC>
 export type SetAppIsInitializedType = ReturnType<typeof setAppisInitialezedAC>
 
 export type ActionsType =
-  | SetAppStatusActionType
   | setIsLoggedInActionType
   | SetAppIsInitializedType
+  | setAppisRegisteredActionType
+  | CreateNewPasswordActionType
+  | SetAppStatusActionType
   | SetAppErrorActionType
+  | UserDataActionType
